@@ -25,6 +25,11 @@ generate.title <- function(x, y, afterClustering = FALSE) {
     return(paste(x, "-", y, "(After clustering)"))
 }
 
+get.method <- function(n) {
+    #clustering.agnes(metric = METRICS$EUCLIDEAN, cutreeLevel = n)
+    clustering.kmeans(n)
+}
+
 
 # UI
 ui <- fluidPage(
@@ -63,9 +68,11 @@ ui <- fluidPage(
 # Server logic
 server <- function(input, output) {
     # At start
+    METRICS <- get.metrics.enum()
     result <- iris
-    kmeans.result <- clustering.kmeans(nOfCenters = 3)
-    result <- cbind(result, Kmeans = kmeans.result)
+    #kmeans.result <- clustering.kmeans(nOfCenters = 3)
+    result.cluster <- get.method(3)
+    result <- cbind(result, cluster = result.cluster)
     
     
     # OUTPUTS
@@ -88,7 +95,7 @@ server <- function(input, output) {
     })
     
     output$plotAfter <- renderPlot({
-        result$Kmeans <- clustering.kmeans(nOfCenters = input$nOfClustersSlider)
+        result$cluster <- get.method(input$nOfClustersSlider)
         
         selectedX <- input$xattributeSelect
         selectedY <- input$yattributeSelect
@@ -102,14 +109,14 @@ server <- function(input, output) {
         visualize.result(data = result, 
                          x = xs, y = ys,
                          xLabel = selectedX, yLabel = selectedY,
-                         dataColumn = result$Kmeans,
+                         dataColumn = result$cluster,
                          title = generate.title(selectedX, selectedY, afterClustering = TRUE))
         
     })
     
     output$plotClusterVisualization <- renderPlot({
-        result$Kmeans <- clustering.kmeans(nOfCenters = input$nOfClustersSlider)
-        visualize.clusplot(result)
+        result$cluster <- get.method(input$nOfClustersSlider)
+        visualize.clusplot(result, dataColumn = result$cluster)
     })
     
     output$tableData <- renderTable(resultReactive(), 
@@ -119,7 +126,7 @@ server <- function(input, output) {
     
     # EVENTS
     resultReactive <- eventReactive(input$nOfClustersSlider, {
-        result$Kmeans <- clustering.kmeans(nOfCenters = input$nOfClustersSlider)
+        result$cluster <- get.method(input$nOfClustersSlider)
         return(result)
     })
 }

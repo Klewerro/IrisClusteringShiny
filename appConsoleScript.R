@@ -6,9 +6,9 @@ source("dataVisualization.R")
 METRICS <- get.metrics.enum()
 
 # Run algorithms
-kmeans.result <- clustering.kmeans(nOfCenters = nCenters)
-agnes.result.manhattan <- clustering.agnes(metric = METRICS$MANHATTAN)
-agnes.result.euclidean <- clustering.agnes(metric = METRICS$EUCLIDEAN)
+kmeans.result <- clustering.kmeans(nOfCenters = 3)
+agnes.result.manhattan <- clustering.agnes(metric = METRICS$MANHATTAN, cutreeLevel = 6)
+agnes.result.euclidean <- clustering.agnes(metric = METRICS$EUCLIDEAN, cutreeLevel = 6)
 diana.result.manhattan <- clustering.diana(metric = METRICS$MANHATTAN)
 diana.result.euclidean <- clustering.diana(metric = METRICS$EUCLIDEAN)
 
@@ -28,11 +28,12 @@ visualize.result(data = result,
                  xLabel = "Sepal Length", yLabel = "Sepal Width",
                  dataColumn = result$Kmeans,
                  title = "Sepal Length-Width")
-visualize.clusplot(result)
+visualize.clusplot(result, result$Kmeans)
 
 
-
-
-
-
-
+#Clusplot for all approaches
+clusplot(result, result$Kmeans, color = TRUE, shade = TRUE, lines = 0, main = "Cluster Kmeans")
+clusplot(result, result$agnes.man, color = TRUE, shade = TRUE, lines = 0, main = "Cluster agnes.man")
+clusplot(result, result$agnes.euc, color = TRUE, shade = TRUE, lines = 0, main = "Cluster agnes.euc")
+clusplot(result, result$diana.man, color = TRUE, shade = TRUE, lines = 0, main = "Cluster diana.man")
+clusplot(result, result$diana.euc, color = TRUE, shade = TRUE, lines = 0, main = "Cluster diana.euc")

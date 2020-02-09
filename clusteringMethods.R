@@ -1,6 +1,5 @@
 library(cluster)
 
-nCenters = 6
 irisData <- iris[,1:4]
 
 clustering.kmeans <- function(nOfCenters) 
@@ -12,21 +11,21 @@ clustering.kmeans <- function(nOfCenters)
 # HIERARHIC CLUSTERING
 
 # Agglomerative (bottom-up)
-clustering.agnes <- function(metric)
+clustering.agnes <- function(metric, cutreeLevel = 3)
 {
   cl.agnes <- agnes(x = iris, metric = metric, method = "single")
   plot(cl.agnes, which.plots = 2)
-  result <- cutree(cl.agnes, 3)
+  result <- cutree(cl.agnes, cutreeLevel)
   
   return(result)
 }
 
 # Divisive hierarchical (top-down)
-clustering.diana <- function(metric)
+clustering.diana <- function(metric, cutreeLevel = 3)
 {
   cl.diana <- diana(x = iris, metric = metric)
   plot(cl.diana, which.plots = 2)
-  result <- cutree(cl.diana, 3)
+  result <- cutree(cl.diana, cutreeLevel)
   
   return(result)
 }

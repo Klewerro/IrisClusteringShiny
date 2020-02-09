@@ -22,9 +22,9 @@ visualize.result <- function(data, x, y, xLabel, yLabel, dataColumn, title)
     labs(color = "Clusters")
 }
 
-visualize.clusplot <- function (data)
+visualize.clusplot <- function (data, dataColumn)
 {
-  clusplot(data, data$Kmeans, color = TRUE, shade = TRUE, lines = 0, main = "Cluster plot")
+  clusplot(data, dataColumn, color = TRUE, shade = TRUE, lines = 0, main = "Cluster plot")
 }
 
 #theme(legend.position = "bottom") +
