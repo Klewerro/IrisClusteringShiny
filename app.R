@@ -15,6 +15,7 @@ source("dataVisualization.R")
 
 
 selectItems.vector <- c("Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width")
+plotHeight <- 700
 
 generate.title <- function(x, y, afterClustering = FALSE) {
     if (!afterClustering) {
@@ -29,9 +30,8 @@ generate.title <- function(x, y, afterClustering = FALSE) {
 ui <- fluidPage(
     
     # Application title
-    titlePanel("Iris clustering"),
-
     
+    titlePanel("Iris clustering"),
     fluidRow(
         column(4, sliderInput("nOfClustersSlider", 
                               "Number of clusters",
@@ -46,18 +46,18 @@ ui <- fluidPage(
                               selected = selectItems.vector[2]))
     ),
     
-    fluidRow(
-        column(6, plotOutput("plotBefore")),
-        column(6, plotOutput("plotAfter")),
-    ),
+    hr(),
     
-    fluidRow(
-        column(width = 8, offset = 2, plotOutput("plotClusterVisualization"))
-    ),
-    
-    fluidRow(
-        column(width = 10, offset = 1, tableOutput("tableData"))
+    tabsetPanel(
+        tabPanel("Comparison plot", fluidRow(
+                     column(6, plotOutput("plotBefore", height = plotHeight)),
+                     column(6, plotOutput("plotAfter", height = plotHeight)),
+                     
+        )),
+        tabPanel("Cluster plot", plotOutput("plotClusterVisualization", height = plotHeight)),
+        tabPanel("Table data", tableOutput("tableData"), align = "center")
     )
+
 )
 
 # Server logic
