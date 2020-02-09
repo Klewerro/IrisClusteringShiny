@@ -33,7 +33,12 @@ ui <- fluidPage(
 
     
     fluidRow(
-        column(4, offset = 2, selectInput("xattributeSelect", 
+        column(4, sliderInput("nOfClustersSlider", 
+                              "Number of clusters",
+                              min = 1,
+                              max = 12,
+                              value = 3)),
+        column(4, selectInput("xattributeSelect", 
                               "First attribute (x)", 
                               selectItems.vector)),
         column(4, selectInput("yattributeSelect", "Second attribute (y)", 
@@ -59,12 +64,9 @@ ui <- fluidPage(
 server <- function(input, output) {
     # At start
     result <- iris
-    kmeans.result <- clustering.kmeans(nOfCenters = nCenters)
+    kmeans.result <- clustering.kmeans(nOfCenters = 3)
     result <- cbind(result, Kmeans = kmeans.result)
     
-    
-    # EVENTS
-
     
     # OUTPUTS
     output$plotBefore <- renderPlot({
@@ -86,6 +88,8 @@ server <- function(input, output) {
     })
     
     output$plotAfter <- renderPlot({
+        result$Kmeans <- clustering.kmeans(nOfCenters = input$nOfClustersSlider)
+        
         selectedX <- input$xattributeSelect
         selectedY <- input$yattributeSelect
         xs <- result[, selectedX]
@@ -100,16 +104,24 @@ server <- function(input, output) {
                          xLabel = selectedX, yLabel = selectedY,
                          dataColumn = result$Kmeans,
                          title = generate.title(selectedX, selectedY, afterClustering = TRUE))
+        
     })
     
     output$plotClusterVisualization <- renderPlot({
+        result$Kmeans <- clustering.kmeans(nOfCenters = input$nOfClustersSlider)
         visualize.clusplot(result)
     })
     
-    output$tableData <- renderTable(result, 
+    output$tableData <- renderTable(resultReactive(), 
                                     rownames = TRUE, 
                                     colnames = TRUE)
-
+    
+    
+    # EVENTS
+    resultReactive <- eventReactive(input$nOfClustersSlider, {
+        result$Kmeans <- clustering.kmeans(nOfCenters = input$nOfClustersSlider)
+        return(result)
+    })
 }
 
 # Run the application 
