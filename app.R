@@ -16,14 +16,12 @@ source("dataVisualization.R")
 
 selectItems.vector <- c("Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width")
 
-init <- function() {
-    result <- iris
-    kmeans.result <- clustering.kmeans(nOfCenters = nCenters)
-    result <- cbind(result, Kmeans = kmeans.result)
-}
-
-generate.title <- function(x, y) {
-    return(paste(x, "-", y))
+generate.title <- function(x, y, afterClustering = FALSE) {
+    if (!afterClustering) {
+        return(paste(x, "-", y, "(Before clustering)"))
+    }
+    
+    return(paste(x, "-", y, "(After clustering)"))
 }
 
 
@@ -33,29 +31,36 @@ ui <- fluidPage(
     # Application title
     titlePanel("Iris clustering"),
 
-    sidebarLayout(
-        sidebarPanel(
-            selectInput("xattributeSelect", 
-                        "First attribute (x)", 
-                        selectItems.vector),
-            selectInput("yattributeSelect", "Second attribute", 
-                        selectItems.vector, 
-                        selected = selectItems.vector[2]),
-            actionButton("button", "Clusterize")
-        ),
-
-        mainPanel(
-           plotOutput("plotBefore"),
-           plotOutput("plotAfter"),
-           tableOutput("tableData")
-        )
+    
+    fluidRow(
+        column(4, offset = 2, selectInput("xattributeSelect", 
+                              "First attribute (x)", 
+                              selectItems.vector)),
+        column(4, selectInput("yattributeSelect", "Second attribute (y)", 
+                              selectItems.vector, 
+                              selected = selectItems.vector[2]))
+    ),
+    
+    fluidRow(
+        column(6, plotOutput("plotBefore")),
+        column(6, plotOutput("plotAfter")),
+    ),
+    
+    fluidRow(
+        column(width = 8, offset = 2, plotOutput("plotClusterVisualization"))
+    ),
+    
+    fluidRow(
+        column(width = 10, offset = 1, tableOutput("tableData"))
     )
 )
 
 # Server logic
 server <- function(input, output) {
     # At start
-    init()
+    result <- iris
+    kmeans.result <- clustering.kmeans(nOfCenters = nCenters)
+    result <- cbind(result, Kmeans = kmeans.result)
     
     
     # EVENTS
@@ -87,21 +92,18 @@ server <- function(input, output) {
         ys <- result[, selectedY]
         
         if (selectedX == selectedY) {
-            showNotification("Axes must be unique", 
-                             type = "error", 
-                             duration = 3)
             return()
         }
-        
-        #visualize.before(x = result$Sepal.Length, y = result$Sepal.Width, 
-        #                 xLabel = input$xattributeSelect, yLabel = input$yattributeSelect,
-        #                 title = generate.title(input$xattributeSelect, input$yattributeSelect))
         
         visualize.result(data = result, 
                          x = xs, y = ys,
                          xLabel = selectedX, yLabel = selectedY,
                          dataColumn = result$Kmeans,
-                         title = generate.title(selectedX, selectedY))
+                         title = generate.title(selectedX, selectedY, afterClustering = TRUE))
+    })
+    
+    output$plotClusterVisualization <- renderPlot({
+        visualize.clusplot(result)
     })
     
     output$tableData <- renderTable(result, 
