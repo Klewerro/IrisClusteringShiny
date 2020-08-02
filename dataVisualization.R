@@ -1,22 +1,22 @@
 library(ggplot2)
 
-visualize.before <- function()
+visualize.before <- function(x, y, xLabel, yLabel, title)
 {
-  spread <- ggplot(data = iris, aes(x = Sepal.Length, y = Sepal.Width))
+  spread <- ggplot(data = iris, aes(x = x, y = y))
   spread + geom_point(aes(color=Species, shape=Species)) +
     theme_bw()+
-    xlab("Sepal Length") +  ylab("Sepal Width") +
-    ggtitle("Sepal Length-Width")
+    xlab(xLabel) +  ylab(yLabel) +
+    ggtitle(title)
 }
 
-visualize.result <- function(data, dataColumn)
+visualize.result <- function(data, x, y, xLabel, yLabel, dataColumn, title)
 {
-  scatter <- ggplot(data=data, aes(x = Sepal.Length, y = Sepal.Width))
+  scatter <- ggplot(data=data, aes(x = x, y = y))
   scatter + geom_point(aes(color=paste("Cluster", dataColumn), shape=19)) +
     scale_shape_identity()+
     theme_bw()+
-    xlab("Sepal Length") +  ylab("Sepal Width") +
-    ggtitle("Sepal Length-Width") + 
+    xlab(xLabel) +  ylab(yLabel) +
+    ggtitle(title) + 
     labs(color = "Clusters")
 }
 

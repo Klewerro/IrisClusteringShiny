@@ -20,12 +20,15 @@ result <- cbind(result, agnes.euc = agnes.result.euclidean)
 result <- cbind(result, diana.man = diana.result.manhattan)
 result <- cbind(result, diana.euc = diana.result.euclidean)
 
-#visualize.new(result, result$Kmeans)
-
-visualize.before()
-visualize.result(data = result, dataColumn = result$Kmeans)
+visualize.before(x = result$Sepal.Length, y = result$Sepal.Width, 
+                 xLabel = "Sepal Length", yLabel = "Sepal Width",
+                 title = "Sepal Length-Width")
+visualize.result(data = result, 
+                 x =result$Sepal.Length, y = result$Sepal.Width, 
+                 xLabel = "Sepal Length", yLabel = "Sepal Width",
+                 dataColumn = result$Kmeans,
+                 title = "Sepal Length-Width")
 visualize.clusplot(result)
-
 
 
 
